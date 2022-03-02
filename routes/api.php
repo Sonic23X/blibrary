@@ -27,7 +27,7 @@ Route::middleware('auth:api')->group(function()
 {
 
     // Chat routes
-    Route::match(['h', 'POST'], 'chat', [ChatController::class, 'handle']);
+    Route::match(['GET', 'POST'], 'chat', [ChatController::class, 'handle']);
 
     // Author routes
     Route::get('author', [AuthorController::class, 'index']);
