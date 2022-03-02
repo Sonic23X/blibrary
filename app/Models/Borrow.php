@@ -5,11 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Auth;
 
-class Book extends Model
+class Borrow extends Model
 {
     use HasFactory, SoftDeletes;
+
+    const FREE = 0;
+    const BORROWED = 1;
 
     /**
      * The attributes that are mass assignable.
@@ -17,38 +19,28 @@ class Book extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'author_id',
-        'category_id',
-        'published',
+        'user_id',
+        'book_id',
+        'status',
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'published' => 'date',
-    ];
-
-    /**
-     * Get the author of the Book
+     * Get the user
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function author()
+    public function user()
     {
-        return $this->belongsTo(Author::class);
+        return $this->belongsTo(User::class);
     }
 
     /**
-     * Get the category of the Book
+     * Get the book
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function category()
+    public function book()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Book::class);
     }
 }

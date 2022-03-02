@@ -15,7 +15,12 @@ return new class extends Migration
     {
         Schema::create('books', function (Blueprint $table) {
             $table->id();
+            $table->string('name', 120);
+            $table->unsignedBigInteger('author_id');
+            $table->unsignedBigInteger('category_id');
+            $table->date('published');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
