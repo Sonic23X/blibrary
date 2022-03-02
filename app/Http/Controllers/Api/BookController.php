@@ -4,6 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\{
+    Book,
+    Borrow
+};
 
 class BookController extends Controller
 {
@@ -14,17 +18,21 @@ class BookController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $books = Book::all();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $booksResponse = $books->map(function($book) {
+            $status = Borrow::where('book_id', $book->id)->where('status', Borrow::BORROWED)->first();
+
+            return collect([
+                'name' => $book->name,
+                'author' => $book->author->name,
+                'category' => $book->category->name,
+                'published' => $book->published,
+                'status' => ($status != null) ? 'No disponible' : 'Disponible',
+            ]);
+        });
+
+        return response()->json(['books' => $booksResponse], 200);
     }
 
     /**
@@ -35,29 +43,21 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        $request->validate([
+            'name' => 'required|string|regex:/^[a-zA-Z\s]+$/u',
+            'author' => 'required|digits',
+            'category' => 'required|digits',
+            'published' => 'required|date',
+        ]);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
+        $book = Book::create([
+            'name' => $request->name,
+            'author_id' => $request->author,
+            'category_id' => $request->category,
+            'published' => $request->published,
+        ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        return response()->json(['book' => $book], 201);
     }
 
     /**
@@ -69,7 +69,25 @@ class BookController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $book = Book::find($id);
+        if ($book) {
+            $request->validate([
+                'name' => 'required|string|regex:/^[a-zA-Z\s]+$/u',
+                'author' => 'required|digits',
+                'category' => 'required|digits',
+                'published' => 'required|date',
+            ]);
+
+            $book = Book::where('id', $id)->update([
+                'name' => $request->name,
+                'author_id' => $request->author,
+                'category_id' => $request->category,
+                'published' => $request->published,
+            ]);
+
+            return response()->json(['book' => $book], 200);
+        } else
+            return response()->json(['message' => 'Libro no encontrado'], 404);
     }
 
     /**
@@ -80,6 +98,11 @@ class BookController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $book = Book::find($id);
+        if ($book) {
+            $book->delete();
+            return response()->json(['message' => 'Libro borrado'], 200);
+        } else
+            return response()->json(['message' => 'Libro no encontrado'], 404);
     }
 }

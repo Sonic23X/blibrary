@@ -26,21 +26,32 @@ Route::post('login', [AuthController::class, 'login']);
 
 Route::middleware('auth:api')->group(function()
 {
+    // Author routes
     Route::get('author', [AuthorController::class, 'index']);
     Route::post('author', [AuthorController::class, 'store']);
     Route::put('author/{id}', [AuthorController::class, 'update']);
-    Route::delete('author/{id}', [AuthorController::class, 'delete']);
+    Route::delete('author/{id}', [AuthorController::class, 'destroy']);
 
-    Route::resource('book', BookController::class);
-    Route::resource('category', CategoryController::class);
-    Route::resource('user', UserController::class);
+    // Book routes
+    Route::get('book', [BookController::class, 'index']);
+    Route::post('book', [BookController::class, 'store']);
+    Route::put('book/{id}', [BookController::class, 'update']);
+    Route::delete('book/{id}', [BookController::class, 'destroy']);
 
-    // Chat
+    // Category routes
+    Route::get('category', [CategoryController::class, 'index']);
+    Route::post('category', [CategoryController::class, 'store']);
+    Route::put('category/{id}', [CategoryController::class, 'update']);
+    Route::delete('category/{id}', [CategoryController::class, 'destroy']);
+
+    // User routes
+    Route::get('user', [UserController::class, 'index']);
+    Route::post('user', [UserController::class, 'store']);
+    Route::put('user/{id}', [UserController::class, 'update']);
+    Route::delete('user/{id}', [UserController::class, 'destroy']);
+
+    // Chat routes
 
 
     Route::get('logout', [AuthController::class, 'logout']);
-});
-
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
 });

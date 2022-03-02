@@ -10,8 +10,8 @@ class Borrow extends Model
 {
     use HasFactory, SoftDeletes;
 
-    const FREE = 0;
-    const BORROWED = 1;
+    const BORROWED = 0;
+    const RETURNED = 1;
 
     /**
      * The attributes that are mass assignable.

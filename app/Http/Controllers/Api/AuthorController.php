@@ -29,7 +29,7 @@ class AuthorController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|alpha'
+            'name' => 'required|string|regex:/^[a-zA-Z\s]+$/u'
         ]);
 
         $author = Author::create([
@@ -51,7 +51,7 @@ class AuthorController extends Controller
         $author = Author::find($id);
         if ($author) {
             $request->validate([
-                'name' => 'required|string|alpha'
+                'name' => 'required|string|regex:/^[a-zA-Z\s]+$/u'
             ]);
 
             $author = Author::where('id', $id)->update([

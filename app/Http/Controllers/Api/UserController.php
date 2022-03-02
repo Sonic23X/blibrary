@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class UserController extends Controller
 {
@@ -14,17 +16,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return response()->json(['users' => User::all()], 200);
     }
 
     /**
@@ -35,29 +27,21 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        $request->validate([
+            'name' => 'required|string|regex:/^[a-zA-Z\s]+$/u',
+            'email' => 'required|string|email|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'type' => 'required|string',
+        ]);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => hash::make($request->password),
+            'type' => $request->type,
+        ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        return response()->json(['user' => $user], 201);
     }
 
     /**
@@ -69,7 +53,24 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $user = User::find($id);
+        if ($user) {
+            $request->validate([
+                'name' => 'required|string|regex:/^[a-zA-Z\s]+$/u',
+                'email' => 'required|string|email|unique:users',
+                'type' => 'required|string',
+            ]);
+
+            $user = User::where('id', $id)->update([
+                'name' => $request->name,
+                'email' => $request->email,
+                'type' => $request->type,
+            ]);
+
+            return response()->json(['user' => $user], 200);
+        }
+        else
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
     }
 
     /**
@@ -80,6 +81,12 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $user = User::find($id);
+        if ($user) {
+            $user->delete();
+            return response()->json(['message' => 'Usuario borrado'], 200);
+        }
+        else
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
     }
 }

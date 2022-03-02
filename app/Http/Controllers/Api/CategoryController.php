@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Category;
 
 class CategoryController extends Controller
 {
@@ -14,17 +15,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return response()->json(['categories' => Category::all()], 200);
     }
 
     /**
@@ -35,29 +26,17 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        $request->validate([
+            'name' => 'required|string|regex:/^[a-zA-Z\s]+$/u',
+            'desc' => 'required|string|regex:/^[a-zA-Z\s]+$/u',
+        ]);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
+        $category = Category::create([
+            'name' => $request->name,
+            'description' => $request->desc
+        ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        return response()->json(['category' => $category], 201);
     }
 
     /**
@@ -69,7 +48,21 @@ class CategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $category = Category::find($id);
+        if ($category) {
+            $request->validate([
+                'name' => 'required|string|regex:/^[a-zA-Z\s]+$/u',
+                'desc' => 'required|string|regex:/^[a-zA-Z\s]+$/u',
+            ]);
+
+            $category = Category::where('id', $id)->update([
+                'name' => $request->name,
+                'description' => $request->desc
+            ]);
+
+            return response()->json(['category' => $category], 200);
+        } else
+            return response()->json(['message' => 'Categoria no encontrada'], 404);
     }
 
     /**
@@ -80,6 +73,11 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $category = Category::find($id);
+        if ($category) {
+            $category->delete();
+            return response()->json(['message' => 'Categoria borrada'], 200);
+        } else
+            return response()->json(['message' => 'Categoria no encontrada'], 404);
     }
 }
