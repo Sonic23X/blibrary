@@ -25,6 +25,10 @@ Route::post('login', [AuthController::class, 'login']);
 
 Route::middleware('auth:api')->group(function()
 {
+
+    // Chat routes
+    Route::match(['h', 'POST'], 'chat', [ChatController::class, 'handle']);
+
     // Author routes
     Route::get('author', [AuthorController::class, 'index']);
     Route::post('author', [AuthorController::class, 'store']);
@@ -48,9 +52,6 @@ Route::middleware('auth:api')->group(function()
     Route::post('user', [UserController::class, 'store']);
     Route::put('user/{id}', [UserController::class, 'update']);
     Route::delete('user/{id}', [UserController::class, 'destroy']);
-
-    // Chat routes
-
 
     Route::get('logout', [AuthController::class, 'logout']);
 });
