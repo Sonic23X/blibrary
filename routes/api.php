@@ -4,6 +4,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\{
     AuthController,
+    AuthorController,
+    BookController,
+    CategoryController,
+    ChatController,
+    UserController
 };
 
 /*
@@ -21,6 +26,18 @@ Route::post('login', [AuthController::class, 'login']);
 
 Route::middleware('auth:api')->group(function()
 {
+    Route::get('author', [AuthorController::class, 'index']);
+    Route::post('author', [AuthorController::class, 'store']);
+    Route::put('author/{id}', [AuthorController::class, 'update']);
+    Route::delete('author/{id}', [AuthorController::class, 'delete']);
+
+    Route::resource('book', BookController::class);
+    Route::resource('category', CategoryController::class);
+    Route::resource('user', UserController::class);
+
+    // Chat
+
+
     Route::get('logout', [AuthController::class, 'logout']);
 });
 
